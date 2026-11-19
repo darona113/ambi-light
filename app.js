@@ -28,13 +28,20 @@
     ...(contacts.max ? [{ title: 'MAX', detail: 'Открыть чат', url: contacts.max, icon: 'max' }] : []),
     { title: 'Instagram', detail: '@ambi_msk', url: contacts.instagram, icon: 'instagram' }
   ];
-  $$('[data-channel-list]').forEach(list => channels.forEach(channel => {
+  $$('[data-channel-list]').forEach(list => {
+    const existing = $$('.channel-link', list);
+    if (existing.length) {
+      existing.forEach((a, i) => { const mark = document.createElement('span'); mark.className = 'channel-icon'; mark.append(icon(channels[i].icon)); a.prepend(mark); });
+      return;
+    }
+    channels.forEach(channel => {
     const a = document.createElement('a'); a.className = 'channel-link'; a.href = channel.url;
     a.target = '_blank'; a.rel = 'noopener noreferrer'; a.setAttribute('aria-label', `${channel.title}: ${channel.detail}`);
     const mark = document.createElement('span'); mark.className = 'channel-icon'; mark.append(icon(channel.icon));
     const text = document.createElement('span'); const title = document.createElement('strong'); title.textContent = channel.title;
     const detail = document.createElement('small'); detail.textContent = channel.detail; text.append(title, detail); a.append(mark, text); list.append(a);
-  }));
+    });
+  });
   if (contacts.max) $$('.max-contact').forEach(el => { el.hidden = true; });
   $('#year').textContent = new Date().getFullYear();
   $('#hero-image').src = media.hero;
@@ -49,7 +56,7 @@
     const video = $('#work-video'); if (video && !video.paused) video.pause();
     closeMenu(false); dialog.showModal(); document.body.classList.add('modal-open');
   }
-  $$('[data-contact]').forEach(el => el.addEventListener('click', () => openDialog(contact)));
+  $$('[data-contact]').forEach(el => el.addEventListener('click', event => { event.preventDefault(); openDialog(contact); }));
   $$('[data-close]').forEach(el => el.addEventListener('click', () => el.closest('dialog').close()));
   $$('dialog').forEach(dialog => {
     dialog.addEventListener('close', () => document.body.classList.toggle('modal-open', !!$('dialog[open]')));
@@ -85,6 +92,7 @@
   const desktopQuery = window.matchMedia('(min-width:851px)');
   desktopQuery.addEventListener('change', event => { if (event.matches) closeMenu(); });
   $$('a[href^="#"]').forEach(link => link.addEventListener('click', event => {
+    if (event.defaultPrevented) return;
     const target = document.getElementById(link.hash.slice(1)); if (!target) return;
     const fromMenu = mobileNav.contains(link);
     event.preventDefault(); closeMenu(); history.pushState(null, '', link.hash);
@@ -96,10 +104,17 @@
 
   // Service examples use the browser's native horizontal scrolling on touch screens.
   const solutionTrack = $('#solution-track'); let currentSolution = 0;
+  const prerenderedSolutions = solutionTrack.children.length === media.solutions.length;
   media.solutions.forEach((solution, index) => {
+    if (prerenderedSolutions) {
+      const button = $(`#solution-list [data-solution-index="${index}"]`);
+      button.addEventListener('click', () => { goSolution(index); if (matchMedia('(max-width:600px)').matches) solutionTrack.scrollIntoView({behavior:behavior(),block:'center'}); });
+      $(`#solution-dots [data-solution-index="${index}"]`).addEventListener('click', () => goSolution(index));
+      return;
+    }
     const slide = document.createElement('figure'); slide.className = 'solution-slide';
     const image = document.createElement('img'); image.src = solution.image; image.alt = solution.alt;
-    image.loading = 'lazy'; image.width = 1280; image.height = 1280;
+    image.loading = 'eager'; image.width = 1280; image.height = 1280;
     const caption = document.createElement('figcaption'); caption.textContent = solution.caption;
     slide.append(image, caption); solutionTrack.append(slide);
     const button = document.createElement('button'); button.className = 'solution-item';
@@ -143,14 +158,15 @@
     $('#gallery-prev').disabled = gallery.scrollLeft < 5;
     $('#gallery-next').disabled = gallery.scrollLeft >= gallery.scrollWidth - gallery.clientWidth - 5;
   }
-  function renderGallery() {
+  function renderGallery(reuse = false) {
+    if (!reuse || !gallery.querySelector('.gallery-card')) {
     gallery.replaceChildren();
     filtered.forEach(project => {
       const photo = project.photos[0]; const button = document.createElement('button'); button.className = 'gallery-card';
       button.setAttribute('aria-label', `Открыть проект: ${project.title}`);
       const frame = document.createElement('span'); frame.className = 'gallery-image';
       const image = document.createElement('img'); image.src = photo.src; image.alt = `${project.title}. ${photo.detail}`;
-      image.loading = 'lazy'; image.decoding = 'async'; image.width = 1280; image.height = 1280; image.draggable = false;
+      image.loading = 'eager'; image.decoding = 'async'; image.width = 1280; image.height = 1280; image.draggable = false;
       const enlarge = document.createElement('span'); enlarge.className = 'gallery-enlarge'; enlarge.append(icon('zoom'));
       const badge = document.createElement('span'); badge.className = 'gallery-stack'; badge.append(icon('layers'), document.createTextNode(`${project.photos.length} фото`));
       frame.append(image, badge, enlarge);
@@ -159,6 +175,7 @@
       const detail = document.createElement('small'); detail.textContent = project.detail; text.append(title, detail); caption.append(text);
       button.append(frame, caption); button.addEventListener('click', () => openProject(project)); gallery.append(button);
     });
+    }
     gallery.scrollTo({ left: 0, behavior: 'auto' });
     $('#project-count').textContent = media.projects.length;
     $('#gallery-status').textContent = `${filtered.length} ${filtered.length === 1 ? 'проект' : filtered.length < 5 ? 'проекта' : 'проектов'} · ${filtered.reduce((n,p) => n + p.photos.length, 0)} фото`;
@@ -176,8 +193,9 @@
     filtered = media.projects.filter(project => button.dataset.filter === 'all' || project.categories.includes(button.dataset.filter));
     $$('.filter').forEach(el => { el.classList.toggle('active', el === button); el.setAttribute('aria-pressed', String(el === button)); }); renderGallery();
   }));
-  renderGallery();
-  $$('[data-project]').forEach(button => button.addEventListener('click', () => {
+  renderGallery(true);
+  $$('[data-project]').forEach(button => button.addEventListener('click', event => {
+    event.preventDefault();
     const project = media.projects.find(p => p.id === button.dataset.project); if (project) openProject(project);
   }));
 
@@ -216,13 +234,13 @@
   }).observe(document.documentElement);
 
   const video = $('#work-video'); const videoPlay = $('#video-play'); const videoPlayLabel = $('#video-play-label');
-  video.src = media.video.src; video.poster = media.video.poster; video.controls = false; videoPlay.hidden = false;
+  video.src = media.video.src; video.poster = media.video.poster; video.preload = 'metadata'; video.controls = false; videoPlay.hidden = false;
   videoPlay.addEventListener('click', async () => {
     video.controls = true; videoPlay.setAttribute('aria-busy', 'true'); videoPlayLabel.textContent = 'Загружаем видео…';
-    try { await video.play(); } catch { videoPlayLabel.textContent = 'Попробовать ещё раз'; toast('Не удалось запустить видео. Попробуйте ещё раз.'); }
+    try { if (video.error) video.load(); await video.play(); } catch { videoPlayLabel.textContent = 'Попробовать ещё раз'; toast('Можно открыть видео отдельно по ссылке под плеером.'); }
     finally { videoPlay.removeAttribute('aria-busy'); }
   });
-  video.addEventListener('play', () => { videoPlay.hidden = true; });
+  video.addEventListener('playing', () => { videoPlay.hidden = true; video.closest('.reel-shell').classList.add('has-started'); });
   video.addEventListener('pause', () => { videoPlayLabel.textContent = video.ended ? 'Посмотреть ещё раз' : 'Продолжить просмотр'; videoPlay.hidden = false; });
   video.addEventListener('ended', () => { videoPlayLabel.textContent = 'Посмотреть ещё раз'; videoPlay.hidden = false; });
   if ('IntersectionObserver' in window) new IntersectionObserver(entries => { if (!entries[0].isIntersecting && !video.paused) video.pause(); }).observe(video);
