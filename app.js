@@ -211,9 +211,9 @@
     $$('.lightbox-thumb').forEach((el, i) => { el.classList.toggle('active', i === photoIndex); el.setAttribute('aria-current', String(i === photoIndex)); });
     $('.lightbox-prev').disabled = photoIndex === 0; $('.lightbox-next').disabled = photoIndex === photos.length - 1;
   }
-  function goPhoto(index, smooth = true) {
+  function goPhoto(index) {
     index = Math.max(0, Math.min(index, photos.length - 1)); syncPhoto(index);
-    lightboxTrack.scrollTo({ left: lightboxTrack.clientWidth * index, behavior: smooth ? behavior() : 'auto' });
+    lightboxTrack.scrollTo({ left: lightboxTrack.clientWidth * index, behavior: 'auto' });
   }
   function openProject(project) {
     photos = project.photos; photoIndex = 0; $('#lightbox-title').textContent = project.title;
@@ -227,14 +227,14 @@
     });
     const multiple = photos.length > 1;
     lightbox.classList.toggle('has-collection', multiple); $('.lightbox-controls').hidden = !multiple;
-    openDialog(lightbox); requestAnimationFrame(() => goPhoto(0, false));
+    openDialog(lightbox); requestAnimationFrame(() => goPhoto(0));
   }
   $('.lightbox-prev').textContent = 'Назад'; $('.lightbox-next').textContent = 'Дальше';
   $('.lightbox-prev').addEventListener('click', () => goPhoto(photoIndex - 1)); $('.lightbox-next').addEventListener('click', () => goPhoto(photoIndex + 1));
   lightboxTrack.addEventListener('scroll', () => { if (lightboxTrack.clientWidth && photos.length) syncPhoto(Math.round(lightboxTrack.scrollLeft / lightboxTrack.clientWidth)); }, { passive: true });
   lightbox.addEventListener('keydown', event => { if (['ArrowLeft','ArrowRight'].includes(event.key)) { event.preventDefault(); goPhoto(photoIndex + (event.key === 'ArrowRight' ? 1 : -1)); } });
   if ('ResizeObserver' in window) new ResizeObserver(() => {
-    goSolution(currentSolution, false); updateGalleryArrows(); if (lightbox.open) goPhoto(photoIndex, false);
+    goSolution(currentSolution, false); updateGalleryArrows(); if (lightbox.open) goPhoto(photoIndex);
   }).observe(document.documentElement);
 
   const video = $('#work-video'); const videoPlay = $('#video-play'); const videoPlayLabel = $('#video-play-label');

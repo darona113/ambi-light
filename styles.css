@@ -179,3 +179,40 @@ body.modal-open .mobile-contact{visibility:hidden}
 .video-direct{font-size:.9375rem;font-weight:600;color:var(--green);text-align:center;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:flex;align-items:center;justify-content:center}
 
 .hero-photo-block{display:flex;flex-direction:column;min-width:0;gap:13px}.hero-photo-block .hero-visual{flex:1;width:100%}.hero-agreement{font-size:.875rem;line-height:1.7;color:#4d5d43;margin:0;padding-left:2px}
+
+/* Fixed viewer rows keep navigation still when captions or image sizes change. */
+.lightbox,.lightbox:modal{height:100vh;max-height:100vh;height:100svh;max-height:100svh;padding:28px 64px;box-sizing:border-box;overscroll-behavior:none}
+.lightbox-content{display:grid;grid-template-rows:54px minmax(0,1fr) 54px 66px;gap:14px;min-width:0;height:100%;overflow:hidden}
+.lightbox-top{min-height:0;min-width:0;overflow:hidden;padding-right:32px;align-items:center}
+.lightbox-top>span:first-child{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.5}
+.lightbox-top>span:last-child{flex-shrink:0}
+.lightbox-track{min-height:0;min-width:0;height:100%;width:100%;touch-action:pan-x pinch-zoom;overscroll-behavior:contain}
+.lightbox-slide{flex:0 0 100%;width:100%;min-width:0;height:100%;overflow:hidden;box-sizing:border-box}
+.lightbox-slide img{width:100%;height:100%;min-height:0;object-fit:contain}
+#lightbox-caption{min-height:0;height:100%;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.65;align-self:center}
+.lightbox-controls{grid-template-columns:96px minmax(0,1fr) 96px;grid-template-rows:66px;gap:14px;min-width:0;min-height:0;height:100%;align-items:center}
+.lightbox-thumbs{grid-column:2;grid-row:1;width:100%;min-width:0;max-width:100%;height:66px;margin:0;overflow-x:auto;overflow-y:hidden;box-sizing:border-box;align-items:center}
+.lightbox-controls .circle-button{grid-row:1;position:static;width:100%;height:48px;min-height:48px;min-width:0;line-height:1;padding:10px;white-space:nowrap;box-sizing:border-box}
+.lightbox-prev{grid-column:1}.lightbox-next{grid-column:3}
+.lightbox:not(.has-collection) .lightbox-content{grid-template-rows:54px minmax(0,1fr) 54px 0}
+@media(max-width:650px){
+ .lightbox,.lightbox:modal{padding:58px 12px max(16px,env(safe-area-inset-bottom))}
+ .lightbox-content{grid-template-rows:48px minmax(0,1fr) 50px 122px;gap:10px}
+ .lightbox-top{padding-right:0;gap:14px}
+ .lightbox-controls{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:64px 48px;gap:10px}
+ .lightbox-thumbs{grid-column:1/-1;grid-row:1;height:64px;width:100%;min-width:0}
+ .lightbox-controls .circle-button{grid-row:2;height:48px}
+ .lightbox-prev{grid-column:1}.lightbox-next{grid-column:2}
+ .lightbox:not(.has-collection) .lightbox-content{grid-template-rows:48px minmax(0,1fr) 50px 0}
+}
+@media(max-height:500px){
+ .lightbox,.lightbox:modal{padding:12px 52px}
+ .lightbox-content{grid-template-rows:30px minmax(0,1fr) 28px 50px;gap:6px}
+ .lightbox-controls{grid-template-columns:80px minmax(0,1fr) 80px;grid-template-rows:50px;gap:10px}
+ .lightbox-thumbs{grid-column:2;grid-row:1;height:50px}
+ .lightbox-controls .circle-button{grid-row:1;height:44px;min-height:44px}
+ .lightbox-prev{grid-column:1}.lightbox-next{grid-column:3}
+ .lightbox-top>span:first-child,#lightbox-caption{-webkit-line-clamp:1}
+ .lightbox-thumb{flex-basis:56px}.lightbox-thumb img{width:48px!important;height:36px!important}
+ .lightbox:not(.has-collection) .lightbox-content{grid-template-rows:30px minmax(0,1fr) 28px 0}
+}
