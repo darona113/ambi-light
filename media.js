@@ -31,31 +31,57 @@ window.AMBI_MEDIA = {
       "photos": [
         {
           "src": "assets/project-01.jpg",
-          "detail": "Гирлянды над зоной отдыха"
+          "detail": "Гирлянды над зоной отдыха",
+          "categories": [
+            "garden"
+          ]
         },
         {
           "src": "assets/project-04.jpg",
-          "detail": "Световое оформление фасада и кровли"
+          "detail": "Световое оформление фасада и кровли",
+          "categories": [
+            "contour",
+            "garlands"
+          ]
         },
         {
           "src": "assets/project-03.jpg",
-          "detail": "Другой ракурс дома и участка"
+          "detail": "Другой ракурс дома и участка",
+          "categories": [
+            "contour",
+            "garlands"
+          ]
         },
         {
           "src": "assets/project-05.jpg",
-          "detail": "Контур и световая бахрома в деталях"
+          "detail": "Контур и световая бахрома в деталях",
+          "categories": [
+            "contour",
+            "garlands"
+          ]
         },
         {
           "src": "assets/project-02.jpg",
-          "detail": "Световой потолок во дворе"
+          "detail": "Световой потолок во дворе",
+          "categories": [
+            "garden"
+          ]
         },
         {
           "src": "assets/project-06.jpg",
-          "detail": "Контур постройки у зоны отдыха"
+          "detail": "Контур постройки у зоны отдыха",
+          "categories": [
+            "contour",
+            "garden"
+          ]
         },
         {
           "src": "assets/project-07.jpg",
-          "detail": "Подсветка карниза со стороны сада"
+          "detail": "Подсветка карниза со стороны сада",
+          "categories": [
+            "contour",
+            "garden"
+          ]
         }
       ],
       "id": "home-garden"
@@ -123,9 +149,9 @@ window.AMBI_MEDIA = {
     {
       "title": "Уличное освещение",
       "description": "Уличные фонари, подсветка дорожек, террас, бассейнов и зон отдыха. Световые акценты там, где они нужны.",
-      "image": "assets/project-06.jpg",
-      "caption": "Освещение дорожки, растений и постройки на участке",
-      "alt": "Садовая дорожка и растения у кирпичной постройки с наружной подсветкой"
+      "image": "assets/project-01.jpg",
+      "caption": "Огоньки над зоной отдыха и освещение дорожек",
+      "alt": "Уютный двор с гирляндами над столом и уличными светильниками вдоль дорожек"
     }
   ],
   "contacts": {

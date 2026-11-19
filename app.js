@@ -190,7 +190,11 @@
   gallery.addEventListener('scroll', updateGalleryArrows, { passive: true });
   gallery.addEventListener('keydown', event => { if (event.target === gallery && ['ArrowLeft','ArrowRight'].includes(event.key)) { event.preventDefault(); moveGallery(event.key === 'ArrowRight' ? 1 : -1); } });
   $$('.filter').forEach(button => button.addEventListener('click', () => {
-    filtered = media.projects.filter(project => button.dataset.filter === 'all' || project.categories.includes(button.dataset.filter));
+    const category = button.dataset.filter;
+    filtered = media.projects.filter(project => category === 'all' || project.categories.includes(category)).map(project => category === 'all' ? project : {
+      ...project,
+      photos: project.photos.filter(photo => !photo.categories || photo.categories.includes(category))
+    });
     $$('.filter').forEach(el => { el.classList.toggle('active', el === button); el.setAttribute('aria-pressed', String(el === button)); }); renderGallery();
   }));
   renderGallery(true);
